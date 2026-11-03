@@ -1,0 +1,64 @@
+@host = https://localhost:7149
+
+### 1) Register
+POST {{host}}/api/v1/auth/register
+Content-Type: application/json
+
+{
+  "email": "ali@test.com",
+  "fullName": "Ali",
+  "password": "Passw0rd1",
+  "preferredLanguage": "ar"
+}
+
+### 2) Login (انسخ accessToken و refreshToken من الرد)
+POST {{host}}/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "email": "ali@test.com",
+  "password": "Passw0rd1"
+}
+
+### 3) Me
+GET {{host}}/api/v1/auth/me
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhNjFhNzNhYy02YTc0LTQ3OTktODk3NS04YTBmOTNhODhmMGEiLCJlbWFpbCI6ImFsaUB0ZXN0LmNvbSIsImp0aSI6IjZjMjFhZmE3LTE5MzUtNDNkNC05YWNlLTJjZjJiZGE1MzJjOSIsInJvbGUiOiJEb25vciIsIm5iZiI6MTc5MzQ3MzcwMiwiZXhwIjoxNzkzNDc0NjAyLCJpc3MiOiJEb25hdGlvbkh1YiIsImF1ZCI6IkRvbmF0aW9uSHViLkNsaWVudHMifQ.qtmPwUVBJEjwlMHXi_SS937MkOwv-cVIbVSf5GOxWuw
+
+### 4) Refresh
+POST {{host}}/api/v1/auth/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "maxPgbN5YgN5GQPHL5m3evnEczXTdM_HY-WOeTAaThCIRGqpg2Yr9CzUYJ6INdJ6UiXtVWQfi7iSds7wVfITxw"
+}
+
+### 5) Logout
+POST {{host}}/api/v1/auth/logout
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhNjFhNzNhYy02YTc0LTQ3OTktODk3NS04YTBmOTNhODhmMGEiLCJlbWFpbCI6ImFsaUB0ZXN0LmNvbSIsImp0aSI6IjZhNmFmZDA1LWY0MTktNDNhMS05NGVlLTdkMDU2MWVmNjVjYyIsInJvbGUiOiJEb25vciIsIm5iZiI6MTc5MzQ3NDA1NSwiZXhwIjoxNzkzNDc0OTU1LCJpc3MiOiJEb25hdGlvbkh1YiIsImF1ZCI6IkRvbmF0aW9uSHViLkNsaWVudHMifQ.32_GpMb44TVLl0Ti8cs33fnLjVs8nl6MXT25ewSGBIE
+Content-Type: application/json
+
+{
+  "refreshToken": "4whuwbOPFXZlC83ZrGJB0ksl11I7hfF6LzzPCBoPNicWakgR41fqh8EtnqFRl_-zPPgO-ZxEV4X7Nwhnwsrcrw"
+}
+
+### 6) Admin login
+POST {{host}}/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@donationhub.local",
+  "password": "Admin@12345"
+}
+
+### 7) Create staff (بتوكن الـ Admin)
+POST {{host}}/api/v1/admin/staff
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJiNjM3NjM2MS0yZjkwLTRmMzktOGY2OS0wYzZkN2QwYmFjNTgiLCJlbWFpbCI6ImFkbWluQGRvbmF0aW9uaHViLmxvY2FsIiwianRpIjoiODM0MWNlNWYtOTZmMy00YWVlLWE3ZjAtOTMyNWYyY2Y0YjJlIiwicm9sZSI6IkFkbWluIiwibmJmIjoxNzkzNDc0MTUxLCJleHAiOjE3OTM0NzUwNTEsImlzcyI6IkRvbmF0aW9uSHViIiwiYXVkIjoiRG9uYXRpb25IdWIuQ2xpZW50cyJ9.4vf7seToV2MwytDhUUfud2FnGprj-QHqmt2XJxgy3BQ
+Content-Type: application/json
+
+{
+  "email": "staff1@test.com",
+  "fullName": "Staff One",
+  "temporaryPassword": "Temp@12345",
+  "role": "CampaignManager",
+  "preferredLanguage": "en"
+}
