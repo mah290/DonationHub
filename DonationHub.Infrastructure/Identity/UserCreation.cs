@@ -39,7 +39,7 @@ namespace DonationHub.Infrastructure.Identity
             var result = await users.CreateAsync(user, password);
             if (!result.Succeeded)
             {
-                // سباق: اتنين سجّلوا بنفس الإيميل في نفس اللحظة
+                //  اتنين سجّلوا بنفس الإيميل في نفس اللحظة
                 if (result.Errors.Any(e => e.Code is "DuplicateEmail" or "DuplicateUserName"))
                     throw AuthErrors.EmailAlreadyExists();
 

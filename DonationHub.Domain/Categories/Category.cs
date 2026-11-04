@@ -41,6 +41,8 @@ namespace DonationHub.Domain.Categories
         {
             if (string.IsNullOrWhiteSpace(nameAr) || string.IsNullOrWhiteSpace(nameEn))
                 throw new DomainException("category.name_required", "Arabic and English names are required.");
+            if (nameAr.Trim().Length > 100 || nameEn.Trim().Length > 100)
+                throw new DomainException("category.name_too_long", "Category names cannot exceed 100 characters.");
 
             NameAr = nameAr.Trim();
             NameEn = nameEn.Trim();

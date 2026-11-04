@@ -9,6 +9,7 @@ namespace DonationHub.Infrastructure.Persistence
 {
     internal class GenericRepository<T> (AppDbContext context):IGenericRepository<T> where T : Entity  
     {
+        protected readonly AppDbContext Context = context; // to access the database context in derived classes
         protected readonly DbSet<T> DbSet = context.Set<T>();
 
         public async Task<T?> GetByIdAsync(Guid id, CancellationToken ct = default)

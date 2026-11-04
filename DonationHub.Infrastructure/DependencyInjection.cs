@@ -1,6 +1,7 @@
 ﻿using DonationHub.Application.Common.Abstractions;
 using DonationHub.Application.Features.Admin;
 using DonationHub.Application.Features.Auth;
+using DonationHub.Application.Features.Categories;
 using DonationHub.Domain.Donations;
 using DonationHub.Infrastructure.Identity;
 using DonationHub.Infrastructure.Interceptors;
@@ -52,6 +53,10 @@ namespace DonationHub.Infrastructure
             })
             .AddRoles<IdentityRole<Guid>>()
             .AddEntityFrameworkStores<AppDbContext>();
+
+            // Category services
+            services.AddScoped<IAsyncQueryExecutor, AsyncQueryExecutor>();
+            services.AddScoped<ICategoryRepository, CategoryRepository>();
 
             // Auth services
             services.AddSingleton<ITokenService, TokenService>();
