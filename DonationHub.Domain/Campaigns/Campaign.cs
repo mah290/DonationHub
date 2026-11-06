@@ -6,7 +6,7 @@ using System.Text;
 
 namespace DonationHub.Domain.Campaigns
 {
-    public sealed class Campaign : Entity, ISoftDeletable
+    public sealed class Campaign : AuditableEntity, ISoftDeletable
     {
         public string TitleAr { get; private set; } = default!;
         public string TitleEn { get; private set; } = default!;
@@ -19,8 +19,6 @@ namespace DonationHub.Domain.Campaigns
         public string? BannerFileName { get; private set; }
         public CampaignStatus Status { get; private set; }
         public Guid CreatedByUserId { get; private set; }
-        public DateTime CreatedAt { get; private set; }
-        public DateTime UpdatedAt { get; private set; }
         public bool IsDeleted { get; private set; }
         public byte[] RowVersion { get; private set; } = [];
         public DateTime? DeletedAtUtc { get; private set; }
@@ -49,9 +47,9 @@ namespace DonationHub.Domain.Campaigns
                 EndDate = endDate,
                 CategoryId = categoryId,
                 Status = CampaignStatus.Active,
-                CreatedByUserId = createdByUserId,
-                CreatedAt = now
+                CreatedByUserId = createdByUserId
             };
+            campaign.MarkCreated(now);
             campaign.ApplyDetails(titleAr, titleEn, descriptionAr, descriptionEn, categoryId, now);
             return campaign;
         }
@@ -143,7 +141,7 @@ namespace DonationHub.Domain.Campaigns
             DescriptionAr = descriptionAr?.Trim() ?? string.Empty;
             DescriptionEn = descriptionEn?.Trim() ?? string.Empty;
             CategoryId = categoryId;
-            UpdatedAt = now;
+            Touch(now);
         }
 
         private static void EnsureGoalIsPositive(decimal goal)

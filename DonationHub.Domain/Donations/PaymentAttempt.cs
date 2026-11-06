@@ -6,15 +6,13 @@ using System.Text;
 
 namespace DonationHub.Domain.Donations
 {
-    public sealed class PaymentAttempt : Entity
+    public sealed class PaymentAttempt : AuditableEntity
     {
         public Guid DonationId { get; private set; }
         public string StripeCheckoutSessionId { get; private set; } = default!;
         public string? StripePaymentIntentId { get; private set; }
         public decimal Amount { get; private set; }
         public PaymentAttemptStatus Status { get; private set; }
-        public DateTime CreatedAt { get; private set; }
-        public DateTime UpdatedAt { get; private set; }
         public string? FailureCode { get; private set; }
 
         private PaymentAttempt() { }
@@ -26,16 +24,17 @@ namespace DonationHub.Domain.Donations
             if (amount <= 0)
                 throw new DomainException("payment.invalid_amount", "Amount must be greater than zero.");
 
-            return new PaymentAttempt
+            var attempt = new PaymentAttempt
             {
                 Id = Guid.NewGuid(),
                 DonationId = donationId,
                 StripeCheckoutSessionId = stripeCheckoutSessionId,
                 Amount = amount,
-                Status = PaymentAttemptStatus.Created,
-                CreatedAt = now,
-                UpdatedAt = now
+                Status = PaymentAttemptStatus.Created
             };
+
+            attempt.MarkCreated(now);   
+            return attempt;
         }
 
         public void MarkSucceeded(string? paymentIntentId, DateTime now)
@@ -43,7 +42,7 @@ namespace DonationHub.Domain.Donations
             EnsureCreated();
             StripePaymentIntentId = paymentIntentId;
             Status = PaymentAttemptStatus.Succeeded;
-            UpdatedAt = now;
+            Touch(now);
         }
 
         public void MarkFailed(string? failureCode, DateTime now)
@@ -51,14 +50,14 @@ namespace DonationHub.Domain.Donations
             EnsureCreated();
             FailureCode = failureCode;
             Status = PaymentAttemptStatus.Failed;
-            UpdatedAt = now;
+            Touch(now);
         }
 
         public void MarkExpired(DateTime now)
         {
             EnsureCreated();
             Status = PaymentAttemptStatus.Expired;
-            UpdatedAt = now;
+            Touch(now);
         }
 
         // Invariant #8

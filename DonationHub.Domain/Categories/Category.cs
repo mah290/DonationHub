@@ -5,21 +5,21 @@ using System.Text;
 
 namespace DonationHub.Domain.Categories
 {
-    public sealed class Category : Entity
+    public sealed class Category : AuditableEntity
     {
         public string NameAr { get; private set; } = default!;
         public string NameEn { get; private set; } = default!;
         public string DescriptionAr { get; private set; } = default!;
         public string DescriptionEn { get; private set; } = default!;
-        public DateTime CreatedAt { get; private set; }
-        public DateTime UpdatedAt { get; private set; }
+        
 
         private Category() { }
 
         public static Category Create(
             string nameAr, string nameEn, string descriptionAr, string descriptionEn, DateTime now)
         {
-            var category = new Category { Id = Guid.NewGuid(), CreatedAt = now };
+            var category = new Category { Id = Guid.NewGuid()};
+            category.MarkCreated(now);
             category.Apply(nameAr, nameEn, descriptionAr, descriptionEn, now);
             return category;
         }
@@ -48,7 +48,7 @@ namespace DonationHub.Domain.Categories
             NameEn = nameEn.Trim();
             DescriptionAr = descriptionAr?.Trim() ?? string.Empty;
             DescriptionEn = descriptionEn?.Trim() ?? string.Empty;
-            UpdatedAt = now;
+            Touch(now);
         }
     }
 }
