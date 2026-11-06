@@ -35,5 +35,18 @@ namespace DonationHub.Api.Controllers
         [HttpGet("me"), Authorize]
         public async Task<IActionResult> Me(CancellationToken ct)
             => Ok(await auth.GetProfileAsync(User.GetUserId(), ct));
+
+        [HttpPut("me"), Authorize]
+        public async Task<IActionResult> UpdateMe(UpdateProfileRequest request, CancellationToken ct)
+            => Ok(await auth.UpdateProfileAsync(User.GetUserId(), request, ct));
+
+        [HttpPost("change-password"), Authorize]
+        public async Task<IActionResult> ChangePassword(ChangePasswordRequest request, CancellationToken ct)
+        {
+            await auth.ChangePasswordAsync(User.GetUserId(), request, ct);
+            return NoContent();
+
+        }
+            
     }
 }

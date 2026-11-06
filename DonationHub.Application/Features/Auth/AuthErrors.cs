@@ -18,5 +18,7 @@ namespace DonationHub.Application.Features.Auth
 
         public static AppException AccountDeactivated() =>
             new("Auth.AccountDeactivated", "This account is deactivated.", ErrorType.Forbidden);
+        public static AppException CurrentPasswordInCorrect()=>
+            new("Auth.CurrentPasswordInCorrect", "Current password is incorrect.", ErrorType.Validation);
     }
 }

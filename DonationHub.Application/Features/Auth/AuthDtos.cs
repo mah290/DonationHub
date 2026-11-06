@@ -5,6 +5,19 @@ using System.Text;
 
 namespace DonationHub.Application.Features.Auth
 {
+    public sealed record UpdateProfileRequest
+    {
+        [Required, MaxLength(200)]
+        public string FullName { get; init; } = string.Empty;
+        public string? PreferredLanguage { get; init; }      
+    }
+    public sealed record ChangePasswordRequest
+    {
+        [Required]
+        public string CurrentPassword { get; init; } = string.Empty;
+        [Required]
+        public string NewPassword { get; init; } = string.Empty;
+    }
     public sealed record RegisterRequest
     {
         [Required, EmailAddress, MaxLength(256)]
