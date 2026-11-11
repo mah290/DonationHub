@@ -1,21 +1,18 @@
-﻿using DonationHub.Application.Features.Admin;
+﻿using DonationHub.Api.Extensions;
+using DonationHub.Application.Features.Admin.CreateStaff;
 using DonationHub.Domain.Users;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace DonationHub.Api.Controllers
+namespace DonationHub.Api.Controllers;
+
+[ApiController]
+[Route("api/v1/admin")]
+[Authorize(Roles = Roles.Admin)]
+public sealed class AdminController(IMediator mediator) : ControllerBase
 {
-    [Route("api/v1/admin")]
-    [ApiController]
-    [Authorize(Roles = Roles.Admin)]
-    public class AdminController(IStaffService staff) : ControllerBase
-    {
-        [HttpPost("staff")]
-        public async Task<IActionResult> CreateStaff(CreateStaffRequest request, CancellationToken ct)
-        {
-            var profile = await staff.CreateStaffAsync(request, ct);
-            return StatusCode(StatusCodes.Status201Created, profile);
-        }
-    }
+    [HttpPost("staff")]
+    public async Task<IActionResult> CreateStaff(CreateStaffCommand command, CancellationToken ct)
+        => this.ToCreated(await mediator.Send(command, ct));
 }

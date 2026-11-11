@@ -106,4 +106,5 @@ public class DonationInvariantTests
         Assert.Throws<DomainException>(() => attempt.MarkFailed("x", Now));
         Assert.Throws<DomainException>(() => attempt.MarkExpired(Now));
     }
+
 }

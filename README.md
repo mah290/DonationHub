@@ -205,22 +205,33 @@ Errors are returned as ProblemDetails with a stable `code` (for example `Auth.In
 
 ## Design Decisions
 
-### Writes: Generic Repository + Unit of Work. Reads: `DbContext` with `AsNoTracking` and DTO projection
+### CQRS with MediatR
 
-(SRS §3.3 rule 5)
+Every use case is a command (write) or a query (read) in its own vertical slice
+(`Features/<Area>/<UseCase>/`): request + validator + handler. Handlers return
+`Result<T>` instead of throwing; controllers only bind input, call `mediator.Send()`
+and map the `Result` to an HTTP status or ProblemDetails. A `ValidationBehavior`
+pipeline step runs FluentValidation before every handler.
 
-- **Writes** load entities with change tracking through `IGenericRepository<T>`, call behavior methods on the domain entity (which enforce the invariants), and persist everything once with `IUnitOfWork.SaveChangesAsync()`. The repository never calls `SaveChanges`, so several changes made by one handler are saved in a single transaction.
-- **Reads** go through `IReadDbContext`, which exposes `AsNoTracking` queries. Handlers project directly to DTOs with `Select(...)`, so SQL selects only the needed columns and no change tracking overhead is paid. Entities are never returned from the API.
-- **Why separate them?** Writes need tracked entities and domain rules. Reads need speed and shape. Forcing reads through a repository would add a layer without value and push the repository toward a "God repository".
+### Why writes use Repository + Unit of Work, but reads bypass them (SRS §3.3 rule 5)
+
+- **Commands** need tracked entities and the domain invariants that live on them.
+  They load the aggregate through `IGenericRepository<T>`, call its behavior methods,
+  and persist everything once via `IUnitOfWork.SaveChangesAsync()`. The repository
+  never saves, so one handler's changes commit together.
+- **Queries** only need a shape, not an aggregate. They read through `IReadDbContext`
+  (`AsNoTracking()`) and project directly to DTOs with `.Select()`, so SQL fetches only
+  the needed columns, with no change-tracking cost and no entity ever leaving the API.
+  Going through a repository would add a layer with no value and a "God repository".
 - `IReadDbContext` and `IAsyncQueryExecutor` live in Application so it does not depend on EF Core.
 
 ### Other decisions
 
-- **Dependency rule:** dependencies point inward only. Domain has no NuGet packages; `DateTime.UtcNow` is never used there. Time comes from `TimeProvider`, injected in services.
-- **Rich domain model:** private setters, factory methods, and behavior methods; invariants throw `DomainException` with a stable code.
+- **Dependency rule:** dependencies point inward only. Domain has no NuGet packages; `DateTime.UtcNow` is never used there. Time comes from `TimeProvider`, injected in handlers.
+- **Rich domain model:** private setters, factory methods, and behavior methods; domain invariants throw `DomainException` with a stable code.
+- **Result pattern:** application-level failures (not found, conflict, invalid credentials...) are returned as `Result` with an `Error` code, not thrown.
 - **Soft delete:** `Campaign` implements `ISoftDeletable`. A `SaveChangesInterceptor` converts deletes to updates, and a global query filter hides deleted rows (`IgnoreQueryFilters()` to include them).
-- **Identity:** `ApplicationUser : IdentityUser<Guid>` lives in Infrastructure, because the Domain cannot reference Identity packages. Other entities reference users by `Guid`.
-- **Refresh tokens:** stored as SHA-256 hashes, rotated on every refresh (`RevokedAt` and `ReplacedByTokenId`), never stored in plain text.
+- **Identity:** `ApplicationUser : IdentityUser<Guid>` lives in Infrastructure, because the Domain cannot reference Identity packages. Handlers reach it through `IIdentityService`. Other entities reference users by `Guid`.
+- **Refresh tokens:** stored as SHA-256 hashes, rotated on every refresh (`RevokedAt` and `ReplacedByTokenId`), never stored in plain text. Reusing a revoked token revokes the whole chain.
 - **Anti-enumeration:** login returns the same `Auth.InvalidCredentials` error for a wrong email or a wrong password.
 - **Fail-fast configuration:** options use Data Annotations with `ValidateOnStart()`; secrets live in user-secrets or environment variables only.
-- **Vertical slices:** Application code is organized by feature (`Features/Categories`, `Features/Auth`...) instead of technical folders.

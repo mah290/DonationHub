@@ -1,5 +1,4 @@
 ﻿using DonationHub.Application.Common.Abstractions;
-using DonationHub.Application.Features.Admin;
 using DonationHub.Application.Features.Auth;
 using DonationHub.Application.Features.Categories;
 using DonationHub.Domain.Donations;
@@ -60,8 +59,8 @@ namespace DonationHub.Infrastructure
 
             // Auth services
             services.AddSingleton<ITokenService, TokenService>();
-            services.AddScoped<IAuthService, AuthService>();
-            services.AddScoped<IStaffService, StaffService>();
+            services.AddScoped<IIdentityService, IdentityService>();
+            services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 
             // Seeding
             services.AddOptions<SeedDevUsersOptions>()

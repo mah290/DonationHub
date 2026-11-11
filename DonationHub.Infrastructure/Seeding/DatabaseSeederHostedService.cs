@@ -52,7 +52,7 @@ namespace DonationHub.Infrastructure.Seeding
             UserManager<ApplicationUser> users, SeedAdminOptions admin, DateTime now)
         {
             if (await users.FindByEmailAsync(admin.Email) is null)
-                await UserCreation.CreateAsync(
+                await UserCreation.CreateOrThrowAsync(
                     users, admin.Email, admin.FullName, admin.Password, Languages.English, Roles.Admin, now);
         }
 
@@ -73,7 +73,7 @@ namespace DonationHub.Infrastructure.Seeding
             if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password)) return;
             if (await users.FindByEmailAsync(email) is not null) return;
 
-            await UserCreation.CreateAsync(users, email, fullName, password, Languages.English, role, now);
+            await UserCreation.CreateOrThrowAsync(users, email, fullName, password, Languages.English, role, now);
         }
 
         private static async Task SeedCategoriesAsync(AppDbContext db, DateTime now, CancellationToken ct)
