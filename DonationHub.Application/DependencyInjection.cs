@@ -19,6 +19,7 @@ namespace DonationHub.Application
             {
                 cfg.RegisterServicesFromAssembly(assembly);
                 cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
+                cfg.AddOpenBehavior(typeof(ConcurrencyBehavior<,>));
             });
 
             services.AddValidatorsFromAssembly(assembly, includeInternalTypes: true);

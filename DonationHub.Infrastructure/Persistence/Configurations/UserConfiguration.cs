@@ -1,5 +1,4 @@
-﻿
-using DonationHub.Infrastructure.Identity;
+﻿using DonationHub.Infrastructure.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;

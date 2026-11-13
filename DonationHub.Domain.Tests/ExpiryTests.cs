@@ -12,10 +12,10 @@ public class ExpiryTests
         var clock = new FakeTimeProvider(new DateTimeOffset(Now, TimeSpan.Zero));
         var campaign = NewCampaign(endDate: Now.AddDays(10));
 
-        // قبل الانتهاء: مفيش exception
+        
         campaign.EnsureCanAcceptDonation(clock.GetUtcNow().UtcDateTime);
 
-        clock.Advance(TimeSpan.FromDays(11));   // نقدّم الوقت من غير ما نستنى
+        clock.Advance(TimeSpan.FromDays(11));   
 
         Assert.Throws<DomainException>(() =>
             campaign.EnsureCanAcceptDonation(clock.GetUtcNow().UtcDateTime));

@@ -28,22 +28,11 @@ namespace DonationHub.Application.Common.Behaviors
             string.Join(" ", failures.Select(f => f.ErrorMessage).Distinct()),
             ErrorType.Validation);
 
-            return CreateFailure(error);
+            return ResultFactory.Failure<TResponse>(error);
 
 
         }
 
-        private static TResponse CreateFailure(Error error)
-        {
-            if (typeof(TResponse) == typeof(Result))
-                return (TResponse)(object)Result.Failure(error);
-
-            // Result<T>.Failure(error)
-            var failure = typeof(TResponse).GetMethod(
-                nameof(Result.Failure),
-                BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly)!;
-
-            return (TResponse)failure.Invoke(null, [error])!;
-        }
+        
     }
 }
