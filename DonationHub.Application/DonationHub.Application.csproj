@@ -17,7 +17,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Features\Donations\" />
     <Folder Include="Features\Donors\" />
   </ItemGroup>
 

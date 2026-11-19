@@ -23,10 +23,8 @@ namespace DonationHub.Application.Common.Behaviors
 
             if(failures.Count() == 0)
                 return await next();
-            var error = new Error(
-            "Validation.Failed",
-            string.Join(" ", failures.Select(f => f.ErrorMessage).Distinct()),
-            ErrorType.Validation);
+            var error = CommonErrors.ValidationFailed(
+                string.Join(" ", failures.Select(f => f.ErrorMessage).Distinct()));
 
             return ResultFactory.Failure<TResponse>(error);
 

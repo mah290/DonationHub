@@ -235,3 +235,13 @@ pipeline step runs FluentValidation before every handler.
 - **Refresh tokens:** stored as SHA-256 hashes, rotated on every refresh (`RevokedAt` and `ReplacedByTokenId`), never stored in plain text. Reusing a revoked token revokes the whole chain.
 - **Anti-enumeration:** login returns the same `Auth.InvalidCredentials` error for a wrong email or a wrong password.
 - **Fail-fast configuration:** options use Data Annotations with `ValidateOnStart()`; secrets live in user-secrets or environment variables only.
+
+### Result pattern and error catalogue
+
+Expected failures (validation, not found, conflict...) are returned as `Result`/`Result<T>`
+carrying an `Error(Code, Message, Type)`, never thrown. `ErrorType` maps to HTTP in one
+place (`ErrorTypeExtensions.ToStatusCode`): Validation 400, Unauthorized 401, Forbidden 403,
+NotFound 404, Conflict 409, PayloadTooLarge 413, UnprocessableEntity 422,
+TooManyRequests 429, Failure 500. Every code in the SRS §6.1 catalogue is declared as a
+static factory in its feature's `*Errors` class, and `ErrorCatalogueTests` locks each
+code to its type.

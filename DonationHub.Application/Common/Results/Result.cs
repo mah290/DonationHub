@@ -4,7 +4,18 @@ using System.Text;
 
 namespace DonationHub.Application.Common.Results
 {
-    public  enum ErrorType { Validation, Unauthorized, Forbidden, NotFound, Conflict }
+    public enum ErrorType
+    {
+        Failure,               // 500
+        Validation,            // 400
+        Unauthorized,          // 401
+        Forbidden,             // 403
+        NotFound,              // 404
+        Conflict,              // 409
+        PayloadTooLarge,       // 413
+        UnprocessableEntity,   // 422
+        TooManyRequests        // 429
+    }
     public sealed record Error(String Code, string Message , ErrorType Type);
     public class Result
     {
