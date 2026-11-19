@@ -16,7 +16,11 @@ namespace DonationHub.Application.Common.Results
         UnprocessableEntity,   // 422
         TooManyRequests        // 429
     }
-    public sealed record Error(String Code, string Message , ErrorType Type);
+    public sealed record Error(
+    string Code,
+    string Message,
+    ErrorType Type,
+    IReadOnlyDictionary<string, string[]>? ValidationErrors = null);
     public class Result
     {
         private readonly Error? _error;

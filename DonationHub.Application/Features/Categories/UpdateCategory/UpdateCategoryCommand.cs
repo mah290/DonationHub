@@ -19,6 +19,7 @@ public sealed class UpdateCategoryCommandValidator : AbstractValidator<UpdateCat
 {
     public UpdateCategoryCommandValidator()
     {
+        RuleFor(x => x.Id).NotEmpty();
         RuleFor(x => x.NameAr).NotEmpty().MaximumLength(100);
         RuleFor(x => x.NameEn).NotEmpty().MaximumLength(100);
         RuleFor(x => x.DescriptionAr).MaximumLength(1000);

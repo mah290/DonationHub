@@ -5,6 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+	
 
   <ItemGroup>
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.2.0" />
@@ -19,5 +20,7 @@
   <ItemGroup>
     <Folder Include="Features\Donors\" />
   </ItemGroup>
+	
+  	
 
 </Project>

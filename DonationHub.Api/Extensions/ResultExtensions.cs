@@ -27,7 +27,20 @@ internal static class ResultExtensions
     {
         var status = error.Type.ToStatusCode();
 
-        var problem = new ProblemDetails { Status = status, Title = error.Code, Detail = error.Message };
+        ProblemDetails problem = error.ValidationErrors is { Count: > 0 } errors
+            ? new ValidationProblemDetails(errors.ToDictionary(e => e.Key, e => e.Value))
+            {
+                Status = status,
+                Title = error.Code,
+                Detail = error.Message
+            }
+            : new ProblemDetails
+            {
+                Status = status,
+                Title = error.Code,
+                Detail = error.Message
+            };
+
         problem.Extensions["code"] = error.Code;
 
         return c.StatusCode(status, problem);

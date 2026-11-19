@@ -213,6 +213,14 @@ Every use case is a command (write) or a query (read) in its own vertical slice
 and map the `Result` to an HTTP status or ProblemDetails. A `ValidationBehavior`
 pipeline step runs FluentValidation before every handler.
 
+### Automatic validation
+
+`ValidationBehavior` runs every registered `IValidator<TRequest>` before the handler.
+If any fail, the pipeline short-circuits and returns `Result.Failure` with
+`Validation.Failed` and a per-property `errors` dictionary (surfaced in the ProblemDetails
+`errors` field). Validators check input shape only (required, length, format, ids); business
+rules (goal vs raised, duplicates, campaign state) stay in the domain and handlers.
+
 ### Why writes use Repository + Unit of Work, but reads bypass them (SRS §3.3 rule 5)
 
 - **Commands** need tracked entities and the domain invariants that live on them.

@@ -14,7 +14,11 @@ public sealed record LogoutCommand : IRequest<Result>
 
 public sealed class LogoutCommandValidator : AbstractValidator<LogoutCommand>
 {
-    public LogoutCommandValidator() => RuleFor(x => x.RefreshToken).NotEmpty();
+    public LogoutCommandValidator() 
+    {
+        RuleFor(x => x.UserId).NotEmpty();
+        RuleFor(x => x.RefreshToken).NotEmpty();
+    } 
 }
 
 internal sealed class LogoutCommandHandler(

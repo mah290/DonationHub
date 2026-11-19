@@ -18,6 +18,7 @@ public sealed class UpdateProfileCommandValidator : AbstractValidator<UpdateProf
 {
     public UpdateProfileCommandValidator()
     {
+        RuleFor(x => x.UserId).NotEmpty();
         RuleFor(x => x.FullName).NotEmpty().MaximumLength(200);
         RuleFor(x => x.PreferredLanguage!)
             .Must(Languages.IsSupported).WithMessage("Preferred language must be 'en' or 'ar'.")

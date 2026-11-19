@@ -1,10 +1,16 @@
 ﻿using DonationHub.Application.Common.Abstractions;
 using DonationHub.Application.Common.Results;
+using FluentValidation;
 using MediatR;
 
 namespace DonationHub.Application.Features.Categories.DeleteCategory;
 
 public sealed record DeleteCategoryCommand(Guid Id) : IRequest<Result>;
+
+public sealed class DeleteCategoryCommandValidator : AbstractValidator<DeleteCategoryCommand>
+{
+    public DeleteCategoryCommandValidator() => RuleFor(x => x.Id).NotEmpty();
+}
 
 internal sealed class DeleteCategoryCommandHandler(ICategoryRepository categories, IUnitOfWork uow)
     : IRequestHandler<DeleteCategoryCommand, Result>

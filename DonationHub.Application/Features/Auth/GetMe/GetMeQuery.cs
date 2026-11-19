@@ -1,10 +1,16 @@
 ﻿using DonationHub.Application.Common.Abstractions;
 using DonationHub.Application.Common.Results;
+using FluentValidation;
 using MediatR;
 
 namespace DonationHub.Application.Features.Auth.GetMe;
 
 public sealed record GetMeQuery(Guid UserId) : IRequest<Result<UserProfileDto>>;
+
+public sealed class GetMeQueryValidator : AbstractValidator<GetMeQuery>
+{
+    public GetMeQueryValidator() => RuleFor(x => x.UserId).NotEmpty();
+}
 
 internal sealed class GetMeQueryHandler(IIdentityService identity)
     : IRequestHandler<GetMeQuery, Result<UserProfileDto>>
