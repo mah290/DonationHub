@@ -32,6 +32,19 @@ builder.Services.AddOptions<JwtBearerOptions>(JwtBearerDefaults.AuthenticationSc
             NameClaimType = "sub",
             RoleClaimType = "role"
         };
+        bearer.Events = new JwtBearerEvents
+        {
+            OnChallenge = ctx =>
+            {
+                ctx.HandleResponse();   // Suppress the default 401 response
+                return AuthProblemWriter.WriteAsync(ctx.HttpContext,
+                    StatusCodes.Status401Unauthorized,
+                    "Authentication is required to access this resource.", "Auth.Unauthorized");
+            },
+            OnForbidden = ctx => AuthProblemWriter.WriteAsync(ctx.HttpContext,
+                StatusCodes.Status403Forbidden,
+                "You do not have permission to access this resource.", "Auth.Forbidden")
+        };
     });
 
 builder.Services.AddApplicationServices();
@@ -40,7 +53,16 @@ builder.Services.AddInfrastructureServices(builder.Configuration);
 
 builder.Services.AddAuthorization();
 
-builder.Services.AddProblemDetails();
+builder.Services.AddProblemDetails(options =>
+{
+    options.CustomizeProblemDetails = ctx =>
+    {
+        ctx.ProblemDetails.Type = $"https://httpstatuses.io/{ctx.ProblemDetails.Status}";
+        ctx.ProblemDetails.Extensions["traceId"] =
+            System.Diagnostics.Activity.Current?.Id ?? ctx.HttpContext.TraceIdentifier;
+        ctx.ProblemDetails.Extensions.TryAdd("code", "Common.BadRequest");
+    };
+});
 builder.Services.AddExceptionHandler<AppExceptionHandler>();
 
 // Add services to the container.
@@ -53,6 +75,9 @@ builder.Services.AddOpenApi(options =>
 });
 
 var app = builder.Build();
+
+app.UseExceptionHandler();
+app.UseStatusCodePages();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

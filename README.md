@@ -253,3 +253,11 @@ NotFound 404, Conflict 409, PayloadTooLarge 413, UnprocessableEntity 422,
 TooManyRequests 429, Failure 500. Every code in the SRS §6.1 catalogue is declared as a
 static factory in its feature's `*Errors` class, and `ErrorCatalogueTests` locks each
 code to its type.
+
+### Error responses (RFC 9457)
+
+Every failure is `application/problem+json`: `type`, `title` (human message), `status`,
+`code` (catalogue code), `traceId`, and `errors` (validation only). Expected failures come
+from `Result` and map via `ErrorType`; unexpected exceptions are handled by a global
+`IExceptionHandler` that logs the full exception with the `traceId` and returns a generic
+500 message, so no stack trace, SQL, or infrastructure detail ever reaches the client.

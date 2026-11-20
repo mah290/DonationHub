@@ -1,4 +1,5 @@
-﻿using DonationHub.Application.Common.Results;
+﻿using DonationHub.Api.ExceptionHandling;
+using DonationHub.Application.Common.Results;
 using Microsoft.AspNetCore.Mvc;
 using System.Runtime.CompilerServices;
 
@@ -25,24 +26,12 @@ internal static class ResultExtensions
 
     public static IActionResult ToProblem(this ControllerBase c, Error error)
     {
-        var status = error.Type.ToStatusCode();
+        var problem = ProblemFactory.Create(c.HttpContext, error);
 
-        ProblemDetails problem = error.ValidationErrors is { Count: > 0 } errors
-            ? new ValidationProblemDetails(errors.ToDictionary(e => e.Key, e => e.Value))
-            {
-                Status = status,
-                Title = error.Code,
-                Detail = error.Message
-            }
-            : new ProblemDetails
-            {
-                Status = status,
-                Title = error.Code,
-                Detail = error.Message
-            };
-
-        problem.Extensions["code"] = error.Code;
-
-        return c.StatusCode(status, problem);
+        return new ObjectResult(problem)
+        {
+            StatusCode = problem.Status,
+            ContentTypes = { "application/problem+json" }
+        };
     }
 }
