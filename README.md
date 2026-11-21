@@ -280,3 +280,11 @@ Repositories and the Unit of Work are mocked; time-dependent logic uses `FakeTim
 so campaign expiry and `daysLeft` are deterministic. Domain invariants, calculations,
 validators, handlers, the validation pipeline and the anti-enumeration login rule are covered;
 getters and EF Core itself are not tested. Run with `dotnet test`.
+
+### Bonus features
+
+- **Cancelled campaigns (CMP-12):** `Campaign.Cancel` is a final state (Rule 8); only Active campaigns can be cancelled.
+- **Specification pattern (CMP-13):** list filters are composable `Specification<T>` objects (`And`/`Or`) that compile to
+  expression trees, so EF still translates them to SQL.
+- **Domain events:** entities raise events (`CampaignCompletedEvent`, `CampaignCancelledEvent`); `UnitOfWork` publishes them
+  through MediatR notifications only after the save succeeds. The domain stays free of MediatR.

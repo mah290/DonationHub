@@ -74,7 +74,7 @@ namespace DonationHub.Infrastructure
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IReadDbContext, ReadDbContext>();
-
+            services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
             return services;
         }
     }

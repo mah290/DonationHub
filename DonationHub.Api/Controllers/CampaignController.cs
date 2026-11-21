@@ -1,4 +1,5 @@
 ﻿using DonationHub.Api.Extensions;
+using DonationHub.Application.Features.Campaigns.CancelCampaign;
 using DonationHub.Application.Features.Campaigns.CreateCampaign;
 using DonationHub.Application.Features.Campaigns.DeleteCampaign;
 using DonationHub.Application.Features.Campaigns.GetCampaignById;
@@ -16,9 +17,10 @@ namespace DonationHub.Api.Controllers;
 [Route("api/v1/campaigns")]
 public sealed class CampaignsController(IMediator mediator) : ControllerBase
 {
+
     [HttpGet, AllowAnonymous]
-    public async Task<IActionResult> GetAll(CancellationToken ct)
-        => this.ToOk(await mediator.Send(new GetCampaignsQuery(Request.GetLanguage()), ct));
+    public async Task<IActionResult> GetAll([FromQuery] Guid? categoryId, CancellationToken ct)
+    => this.ToOk(await mediator.Send(new GetCampaignsQuery(Request.GetLanguage(), categoryId), ct));
 
     [HttpGet("success-stories"), AllowAnonymous]
     public async Task<IActionResult> GetSuccessStories(CancellationToken ct)
@@ -41,4 +43,8 @@ public sealed class CampaignsController(IMediator mediator) : ControllerBase
     [HttpDelete("{id:guid}"), Authorize(Roles = Roles.Admin)]
     public async Task<IActionResult> Delete(Guid id, CancellationToken ct)
         => this.ToNoContent(await mediator.Send(new DeleteCampaignCommand(id), ct));
+
+    [HttpPost("{id:guid}/cancel"), Authorize(Roles = Roles.Admin)]
+    public async Task<IActionResult> Cancel(Guid id, CancellationToken ct)
+    => this.ToOk(await mediator.Send(new CancelCampaignCommand(id), ct));
 }

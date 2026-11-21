@@ -75,8 +75,7 @@ public sealed class Campaign : AuditableEntity, ISoftDeletable
         EndDate = endDate;
 
         // Automatically mark as completed if the raised amount meets or exceeds the new goal
-        if (RaisedAmount >= GoalAmount)
-            Status = CampaignStatus.Completed;
+        CompleteIfGoalReached(now);
     }
 
     // Rules 1, 7, 8
@@ -119,8 +118,7 @@ public sealed class Campaign : AuditableEntity, ISoftDeletable
         RaisedAmount += amount;
         Touch(now);
 
-        if (Status == CampaignStatus.Active && RaisedAmount >= GoalAmount)
-            Status = CampaignStatus.Completed;
+        CompleteIfGoalReached(now);
     }
 
     // Rule 8
@@ -132,6 +130,15 @@ public sealed class Campaign : AuditableEntity, ISoftDeletable
 
         Status = CampaignStatus.Expired;
         Touch(now);
+    }
+    // CMP-12 + Rule 8
+    public void Cancel(DateTime now)
+    {
+        EnsureActive();                       
+
+        Status = CampaignStatus.Cancelled;
+        Touch(now);
+        Raise(new CampaignCancelledEvent(Id, now));   
     }
 
     // Rule 9
@@ -184,5 +191,15 @@ public sealed class Campaign : AuditableEntity, ISoftDeletable
     {
         if (endDate <= now)
             throw new DomainException("Campaign.EndDateInPast", "End date must be in the future.");
+    }
+
+
+    private void CompleteIfGoalReached(DateTime now)
+    {
+        if (Status == CampaignStatus.Active && RaisedAmount >= GoalAmount)
+        {
+            Status = CampaignStatus.Completed;
+            Raise(new CampaignCompletedEvent(Id, RaisedAmount, now));
+        }
     }
 }

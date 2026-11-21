@@ -1,5 +1,6 @@
 ﻿using DonationHub.Application.Common.Abstractions;
 using DonationHub.Application.Common.Results;
+using DonationHub.Application.Common.Specifications;
 using DonationHub.Domain.Enums;
 using DonationHub.Domain.Users;
 using FluentValidation;
@@ -7,7 +8,8 @@ using MediatR;
 
 namespace DonationHub.Application.Features.Campaigns.GetCampaigns;
 
-public sealed record GetCampaignsQuery(string Language) : IRequest<Result<IReadOnlyList<CampaignListItemDto>>>;
+public sealed record GetCampaignsQuery(string Language, Guid? CategoryId = null)
+    : IRequest<Result<IReadOnlyList<CampaignListItemDto>>>;
 
 public sealed class GetCampaignsQueryValidator : AbstractValidator<GetCampaignsQuery>
 {
@@ -24,9 +26,13 @@ internal sealed class GetCampaignsQueryHandler(
     {
         var now = clock.GetUtcNow().UtcDateTime;
 
+        var spec = CampaignSpecifications.Active();
+        if (q.CategoryId is { } categoryId)
+            spec = spec.And(CampaignSpecifications.InCategory(categoryId));
+
         var rows = await query.ToListAsync(
             read.Campaigns
-                .Where(c => c.Status == CampaignStatus.Active)
+                .Satisfying(spec)
                 .OrderByDescending(c => c.CreatedAt)
                 .Select(CampaignReadModel.Projection(q.Language == Languages.Arabic)), ct);
 

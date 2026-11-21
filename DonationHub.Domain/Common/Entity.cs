@@ -1,15 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace DonationHub.Domain.Common
+namespace DonationHub.Domain.Common;
+
+public abstract class Entity
 {
-    public abstract class Entity
-    {
-        public Guid Id { get; protected set; }
+    private readonly List<IDomainEvent> _domainEvents = [];
 
-        protected Entity(Guid id) => Id = id;
+    public Guid Id { get; protected set; }
 
-        protected Entity() { } // for EF Core
-    }
+    [NotMapped]   // عشان EF ميحاولش يعمله mapping
+    public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents;
+
+    protected Entity(Guid id) => Id = id;
+
+    protected Entity() { } // for EF Core
+
+    protected void Raise(IDomainEvent domainEvent) => _domainEvents.Add(domainEvent);
+
+    public void ClearDomainEvents() => _domainEvents.Clear();
 }

@@ -1,26 +1,34 @@
 ﻿using DonationHub.Application.Common.Abstractions;
 using DonationHub.Application.Common.Exceptions;
+using DonationHub.Domain.Common;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace DonationHub.Infrastructure.Persistence
+namespace DonationHub.Infrastructure.Persistence;
+
+internal sealed class UnitOfWork(AppDbContext context, IDomainEventDispatcher dispatcher) : IUnitOfWork
 {
-    internal sealed class UnitOfWork(AppDbContext context) : IUnitOfWork
+    public async Task<int> SaveChangesAsync(CancellationToken ct = default)
     {
-        public async Task<int> SaveChangesAsync(CancellationToken ct = default)
+        int rows;
+        try
         {
-            try
-            {
-                return await context.SaveChangesAsync(ct);
-
-            }
-            catch (DbUpdateConcurrencyException ex)
-            {
-                throw new ConcurrencyException(ex);
-            }
+            rows = await context.SaveChangesAsync(ct);
         }
-        
+        catch (DbUpdateConcurrencyException ex)
+        {
+            throw new ConcurrencyException(ex);
+        }
+        var entities = context.ChangeTracker.Entries<Entity>()
+            .Select(e => e.Entity)
+            .Where(e => e.DomainEvents.Count > 0)
+            .ToList();
+
+        var events = entities.SelectMany(e => e.DomainEvents).ToList();
+        entities.ForEach(e => e.ClearDomainEvents());
+
+        if (events.Count > 0)
+            await dispatcher.DispatchAsync(events, ct);
+
+        return rows;
     }
 }

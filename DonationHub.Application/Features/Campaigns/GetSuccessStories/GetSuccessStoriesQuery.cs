@@ -1,5 +1,6 @@
 ﻿using DonationHub.Application.Common.Abstractions;
 using DonationHub.Application.Common.Results;
+using DonationHub.Application.Common.Specifications;
 using DonationHub.Domain.Enums;
 using DonationHub.Domain.Users;
 using FluentValidation;
@@ -27,7 +28,7 @@ internal sealed class GetSuccessStoriesQueryHandler(
 
         var rows = await query.ToListAsync(
             read.Campaigns
-                .Where(c => c.Status == CampaignStatus.Completed)
+                .Satisfying(CampaignSpecifications.Completed())
                 .OrderByDescending(c => c.UpdatedAt)
                 .Select(CampaignReadModel.Projection(q.Language == Languages.Arabic)), ct);
 
