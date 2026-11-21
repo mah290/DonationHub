@@ -23,6 +23,8 @@
 
 	<ItemGroup>
 		<InternalsVisibleTo Include="DonationHub.Domain.Tests" />
+		  <InternalsVisibleTo Include="DonationHub.UnitTests" />
+		
 	</ItemGroup>	
 
 </Project>

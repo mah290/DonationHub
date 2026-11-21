@@ -1,5 +1,6 @@
 ﻿using DonationHub.Application.Common.Abstractions;
 using DonationHub.Application.Common.Results;
+using DonationHub.Application.Common.Validation;
 using DonationHub.Application.Features.Auth;
 using DonationHub.Domain.Users;
 using FluentValidation;
@@ -26,7 +27,7 @@ namespace DonationHub.Application.Features.Admin.CreateStaff
         {
             RuleFor(x => x.Email).NotEmpty().EmailAddress().MaximumLength(256);
             RuleFor(x => x.FullName).NotEmpty().MaximumLength(200);
-            RuleFor(x => x.TemporaryPassword).NotEmpty();
+            RuleFor(x => x.TemporaryPassword).MeetsPasswordPolicy();
             RuleFor(x => x.Role)
                 .Must(r => r is Roles.Admin or Roles.CampaignManager)
                 .WithMessage("Role must be 'Admin' or 'CampaignManager'.");

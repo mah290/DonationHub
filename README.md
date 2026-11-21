@@ -272,3 +272,11 @@ Public endpoints pick the Ar/En column from `Accept-Language` (fallback `en`) an
 `progressPercent` and `daysLeft` (via `TimeProvider`); admin endpoints return both languages.
 Deleting is always soft; `FindAsync` ignores query filters, so the campaign repository
 overrides `GetByIdAsync` to respect them.
+
+### Testing
+
+`DonationHub.UnitTests` (xUnit, Moq 4.18.4, FluentAssertions 7.0.0) follows Arrange-Act-Assert.
+Repositories and the Unit of Work are mocked; time-dependent logic uses `FakeTimeProvider`
+so campaign expiry and `daysLeft` are deterministic. Domain invariants, calculations,
+validators, handlers, the validation pipeline and the anti-enumeration login rule are covered;
+getters and EF Core itself are not tested. Run with `dotnet test`.

@@ -24,4 +24,8 @@
     <ProjectReference Include="..\DonationHub.Domain\DonationHub.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+  	<InternalsVisibleTo Include="DonationHub.UnitTests" />
+  </ItemGroup>
+
 </Project>

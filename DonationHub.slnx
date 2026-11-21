@@ -7,4 +7,5 @@
   <Project Path="DonationHub.Domain.Tests/DonationHub.Domain.Tests.csproj" Id="21d79892-176a-420c-9a14-eaed5a0d7b0b" />
   <Project Path="DonationHub.Domain/DonationHub.Domain.csproj" />
   <Project Path="DonationHub.Infrastructure/DonationHub.Infrastructure.csproj" />
+  <Project Path="DonationHub.UnitTests/DonationHub.UnitTests.csproj" />
 </Solution>

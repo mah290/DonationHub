@@ -1,5 +1,6 @@
 ﻿using DonationHub.Application.Common.Abstractions;
 using DonationHub.Application.Common.Results;
+using DonationHub.Application.Common.Validation;
 using DonationHub.Domain.Users;
 using FluentValidation;
 using MediatR;
@@ -26,7 +27,7 @@ namespace DonationHub.Application.Features.Auth.Register
                 .NotEmpty()
                 .EmailAddress().MaximumLength(256);
             RuleFor(x => x.FullName).NotEmpty().MaximumLength(200);
-            RuleFor(x => x.Password).NotEmpty();
+            RuleFor(x => x.Password).MeetsPasswordPolicy();
             RuleFor(x => x.PreferredLanguage).Must(Languages.IsSupported).WithMessage($"Preferred language must be one of the supported languages 'en' or 'ar' ");
         }
     }

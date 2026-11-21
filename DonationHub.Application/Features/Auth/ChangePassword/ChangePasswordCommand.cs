@@ -1,8 +1,9 @@
-﻿using System.Text.Json.Serialization;
-using DonationHub.Application.Common.Abstractions;
+﻿using DonationHub.Application.Common.Abstractions;
 using DonationHub.Application.Common.Results;
+using DonationHub.Application.Common.Validation;
 using FluentValidation;
 using MediatR;
+using System.Text.Json.Serialization;
 
 namespace DonationHub.Application.Features.Auth.ChangePassword;
 
@@ -19,7 +20,7 @@ public sealed class ChangePasswordCommandValidator : AbstractValidator<ChangePas
     {
         RuleFor(x => x.UserId).NotEmpty();
         RuleFor(x => x.CurrentPassword).NotEmpty();
-        RuleFor(x => x.NewPassword).NotEmpty();
+        RuleFor(x => x.NewPassword).MeetsPasswordPolicy();
     }
 }
 
