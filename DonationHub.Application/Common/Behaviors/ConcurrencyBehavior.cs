@@ -16,7 +16,7 @@ namespace DonationHub.Application.Common.Behaviors
         {
             try
             {
-                return await next();
+                return await next(cancellationToken);
             }
             catch (ConcurrencyException)
             {

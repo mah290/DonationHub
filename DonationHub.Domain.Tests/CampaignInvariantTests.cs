@@ -13,7 +13,7 @@ public class CampaignInvariantTests
     public void Create_WithNonPositiveGoal_Throws(decimal goal)
     {
         var ex = Assert.Throws<DomainException>(() => NewCampaign(goal));
-        Assert.Equal("campaign.invalid_goal", ex.Code);
+        Assert.Equal("Campaign.InvalidGoal", ex.Code);
     }
 
     // Invariant 2
@@ -21,7 +21,7 @@ public class CampaignInvariantTests
     public void Create_WithPastEndDate_Throws()
     {
         var ex = Assert.Throws<DomainException>(() => NewCampaign(endDate: Now.AddDays(-1)));
-        Assert.Equal("campaign.invalid_end_date", ex.Code);
+        Assert.Equal("Campaign.EndDateInPast", ex.Code);
     }
 
     // Invariant 2
@@ -30,7 +30,7 @@ public class CampaignInvariantTests
     {
         var campaign = NewCampaign();
         var ex = Assert.Throws<DomainException>(() => campaign.ChangeEndDate(Now.AddDays(-1), Now));
-        Assert.Equal("campaign.invalid_end_date", ex.Code);
+        Assert.Equal("Campaign.EndDateInPast", ex.Code);
     }
 
     // Invariant 3
@@ -70,7 +70,7 @@ public class CampaignInvariantTests
         NewDonation(campaign, 500m).MarkSucceeded(campaign, Now);
 
         var ex = Assert.Throws<DomainException>(() => campaign.ChangeGoal(400m, Now));
-        Assert.Equal("campaign.goal_below_raised", ex.Code);
+        Assert.Equal("Campaign.GoalBelowRaised", ex.Code);
     }
 
     [Fact]
@@ -92,7 +92,7 @@ public class CampaignInvariantTests
         NewDonation(campaign, 100m).MarkSucceeded(campaign, Now);
 
         var ex = Assert.Throws<DomainException>(() => campaign.MarkExpired(Now.AddDays(11)));
-        Assert.Equal("campaign.final_state", ex.Code);
+        Assert.Equal("Campaign.NotActive", ex.Code);
     }
 
     [Fact]

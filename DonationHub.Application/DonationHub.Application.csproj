@@ -20,7 +20,9 @@
   <ItemGroup>
     <Folder Include="Features\Donors\" />
   </ItemGroup>
-	
-  	
+
+	<ItemGroup>
+		<InternalsVisibleTo Include="DonationHub.Domain.Tests" />
+	</ItemGroup>	
 
 </Project>

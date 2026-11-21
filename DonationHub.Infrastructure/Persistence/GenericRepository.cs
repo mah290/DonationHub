@@ -12,8 +12,8 @@ namespace DonationHub.Infrastructure.Persistence
         protected readonly AppDbContext Context = context; // to access the database context in derived classes
         protected readonly DbSet<T> DbSet = context.Set<T>();
 
-        public async Task<T?> GetByIdAsync(Guid id, CancellationToken ct = default)
-            => await DbSet.FindAsync([id], ct);
+        public virtual async Task<T?> GetByIdAsync(Guid id, CancellationToken ct = default)
+    => await DbSet.FindAsync([id], ct);
 
         public async Task AddAsync(T entity, CancellationToken ct = default)
             => await DbSet.AddAsync(entity, ct);

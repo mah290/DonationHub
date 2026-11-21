@@ -261,3 +261,14 @@ Every failure is `application/problem+json`: `type`, `title` (human message), `s
 from `Result` and map via `ErrorType`; unexpected exceptions are handled by a global
 `IExceptionHandler` that logs the full exception with the `traceId` and returns a generic
 500 message, so no stack trace, SQL, or infrastructure detail ever reaches the client.
+
+### Campaigns
+
+Campaign rules live in the `Campaign` entity (`Create`, `Update`, `SoftDelete`...). Domain
+violations carry catalogue codes; a `DomainExceptionBehavior` maps them to `Result` errors
+(`Campaign.EndDateInPast` 422, `Campaign.GoalBelowRaised` 422, `Campaign.NotActive` 409).
+Concurrent edits are detected with `RowVersion` (`Campaign.ConcurrencyConflict` 409).
+Public endpoints pick the Ar/En column from `Accept-Language` (fallback `en`) and compute
+`progressPercent` and `daysLeft` (via `TimeProvider`); admin endpoints return both languages.
+Deleting is always soft; `FindAsync` ignores query filters, so the campaign repository
+overrides `GetByIdAsync` to respect them.
