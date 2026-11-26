@@ -1,9 +1,12 @@
+using DonationHub.Api.Authorization;
 using DonationHub.Api.ExceptionHandling;
 using DonationHub.Api.OpenApi;
 using DonationHub.Application;
+using DonationHub.Application.Common.Abstractions;
 using DonationHub.Infrastructure;
 using DonationHub.Infrastructure.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
@@ -54,6 +57,10 @@ builder.Services.AddInfrastructureServices(builder.Configuration);
 // convert enums to strings in JSON responses (instead of numbers)
 builder.Services.AddControllers() 
     .AddJsonOptions(o => o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddSingleton<IAuthorizationHandler, CampaignOwnershipHandler>();
+builder.Services.AddScoped<ICampaignAuthorizer, CampaignAuthorizer>();
 
 builder.Services.AddAuthorization();
 

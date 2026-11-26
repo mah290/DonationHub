@@ -4,7 +4,6 @@ namespace DonationHub.Application.Common.Validation;
 
 public static class PasswordRules
 {
-    // نفس سياسة Identity: 8+ حروف، كبير، صغير، رقم
     public static IRuleBuilderOptions<T, string> MeetsPasswordPolicy<T>(this IRuleBuilder<T, string> rule) =>
         rule.NotEmpty()
             .MinimumLength(8).WithMessage("Password must be at least 8 characters.")

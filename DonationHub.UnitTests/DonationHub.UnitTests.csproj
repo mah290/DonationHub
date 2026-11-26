@@ -25,6 +25,7 @@
     <ProjectReference Include="..\DonationHub.Domain\DonationHub.Domain.csproj" />
     <ProjectReference Include="..\DonationHub.Application\DonationHub.Application.csproj" />
     <ProjectReference Include="..\DonationHub.Infrastructure\DonationHub.Infrastructure.csproj" />
+    <ProjectReference Include="..\DonationHub.Api\DonationHub.Api.csproj" />
   </ItemGroup>
 
 </Project>

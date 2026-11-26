@@ -40,6 +40,7 @@ public sealed class UpdateCampaignCommandValidator : AbstractValidator<UpdateCam
 internal sealed class UpdateCampaignCommandHandler(
     ICampaignRepository campaigns,
     ICategoryRepository categories,
+    ICampaignAuthorizer authorizer,
     IUnitOfWork uow,
     TimeProvider clock) : IRequestHandler<UpdateCampaignCommand, Result<CampaignAdminDto>>
 {
@@ -48,7 +49,7 @@ internal sealed class UpdateCampaignCommandHandler(
         var now = clock.GetUtcNow().UtcDateTime;
 
         var campaign = await campaigns.GetByIdAsync(cmd.Id, ct);   
-        if (campaign is null) return CampaignErrors.NotFound();
+        if (campaign is null || !await authorizer.CanManageAsync(campaign,ct)) return CampaignErrors.NotFound();
 
         if (await categories.GetByIdAsync(cmd.CategoryId, ct) is null)
             return CategoryErrors.NotFound();

@@ -8,5 +8,6 @@ namespace DonationHub.Application.Common.Abstractions
     {
         Task<List<T>> ToListAsync<T>(IQueryable<T> query, CancellationToken ct = default);
         Task<T?> FirstOrDefaultAsync<T>(IQueryable<T> query, CancellationToken ct = default);
+        Task<int> CountAsync<T>(IQueryable<T> query, CancellationToken ct = default);
     }
 }

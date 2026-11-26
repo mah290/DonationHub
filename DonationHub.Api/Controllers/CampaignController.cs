@@ -4,6 +4,7 @@ using DonationHub.Application.Features.Campaigns.CreateCampaign;
 using DonationHub.Application.Features.Campaigns.DeleteCampaign;
 using DonationHub.Application.Features.Campaigns.GetCampaignById;
 using DonationHub.Application.Features.Campaigns.GetCampaigns;
+using DonationHub.Application.Features.Campaigns.GetMyCampaigns;
 using DonationHub.Application.Features.Campaigns.GetSuccessStories;
 using DonationHub.Application.Features.Campaigns.UpdateCampaign;
 using DonationHub.Domain.Users;
@@ -30,21 +31,27 @@ public sealed class CampaignsController(IMediator mediator) : ControllerBase
     public async Task<IActionResult> GetById(Guid id, CancellationToken ct)
         => this.ToOk(await mediator.Send(new GetCampaignByIdQuery(id, Request.GetLanguage()), ct));
 
-    [HttpPost, Authorize(Roles = Roles.Admin)]
+    [HttpPost, Authorize(Roles = Roles.AdminOrManager)]
     public async Task<IActionResult> Create(CreateCampaignCommand command, CancellationToken ct)
-        => this.ToCreatedAtRoute(
-            await mediator.Send(command with { UserId = User.GetUserId() }, ct),
-            "GetCampaignById", c => new { id = c.Id });
+    => this.ToCreatedAtRoute(
+        await mediator.Send(command with { UserId = User.GetUserId() }, ct),
+        "GetCampaignById", c => new { id = c.Id });
 
-    [HttpPut("{id:guid}"), Authorize(Roles = Roles.Admin)]
+
+    [HttpPut("{id:guid}"), Authorize(Roles = Roles.AdminOrManager)]
     public async Task<IActionResult> Update(Guid id, UpdateCampaignCommand command, CancellationToken ct)
-        => this.ToOk(await mediator.Send(command with { Id = id }, ct));
+    => this.ToOk(await mediator.Send(command with { Id = id }, ct));
 
-    [HttpDelete("{id:guid}"), Authorize(Roles = Roles.Admin)]
+    [HttpDelete("{id:guid}"), Authorize(Roles = Roles.AdminOrManager)]
     public async Task<IActionResult> Delete(Guid id, CancellationToken ct)
         => this.ToNoContent(await mediator.Send(new DeleteCampaignCommand(id), ct));
 
-    [HttpPost("{id:guid}/cancel"), Authorize(Roles = Roles.Admin)]
+    [HttpPost("{id:guid}/cancel"), Authorize(Roles = Roles.AdminOrManager)]
     public async Task<IActionResult> Cancel(Guid id, CancellationToken ct)
-    => this.ToOk(await mediator.Send(new CancelCampaignCommand(id), ct));
+        => this.ToOk(await mediator.Send(new CancelCampaignCommand(id), ct));
+
+
+    [HttpGet("mine"), Authorize(Roles = Roles.CampaignManager)]
+    public async Task<IActionResult> GetMine([FromQuery] GetMyCampaignsQuery query, CancellationToken ct)
+    => this.ToOk(await mediator.Send(query with { UserId = User.GetUserId() }, ct));
 }

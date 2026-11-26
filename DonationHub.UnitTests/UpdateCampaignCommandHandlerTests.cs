@@ -20,9 +20,17 @@ public class UpdateCampaignCommandHandlerTests
     private readonly Mock<IUnitOfWork> _uow = new();
     private readonly FakeTimeProvider _clock = TestData.NewClock();
     private readonly UpdateCampaignCommandHandler _sut;
+    private readonly Mock<ICampaignAuthorizer> _authorizer = new();
 
-    public UpdateCampaignCommandHandlerTests() =>
-        _sut = new(_campaigns.Object, _categories.Object, _uow.Object, _clock);
+    public UpdateCampaignCommandHandlerTests()
+    {
+        _authorizer.Setup(a => a.CanManageAsync(It.IsAny<Campaign>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
+        _sut = new(_campaigns.Object, _categories.Object, _authorizer.Object, _uow.Object, _clock);
+    }
+
+    //public UpdateCampaignCommandHandlerTests() =>
+    //    _sut = new(_campaigns.Object, _categories.Object, _uow.Object, _clock);
 
     // 13) id مش موجود
     [Fact]

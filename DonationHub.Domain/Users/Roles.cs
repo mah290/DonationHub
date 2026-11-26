@@ -9,5 +9,6 @@ namespace DonationHub.Domain.Users
         public const string Admin = "Admin";
         public const string CampaignManager = "CampaignManager";
         public const string Donor = "Donor";
+        public const string AdminOrManager = Admin + "," + CampaignManager;
     }
 }

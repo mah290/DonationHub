@@ -25,6 +25,11 @@ public sealed record CampaignAdminDto(
         c.Id, c.TitleAr, c.TitleEn, c.DescriptionAr, c.DescriptionEn, c.GoalAmount, c.RaisedAmount,
         c.EndDate, c.CategoryId, c.BannerFileName, c.Status, c.CreatedByUserId,
         c.CreatedAt, c.UpdatedAt, c.RowVersion);
+
+    public static readonly Expression<Func<Campaign, CampaignAdminDto>> Projection = c => new CampaignAdminDto(
+    c.Id, c.TitleAr, c.TitleEn, c.DescriptionAr, c.DescriptionEn, c.GoalAmount, c.RaisedAmount,
+    c.EndDate, c.CategoryId, c.BannerFileName, c.Status, c.CreatedByUserId,
+    c.CreatedAt, c.UpdatedAt, c.RowVersion);
 }
 
 public sealed record CampaignListItemDto(

@@ -13,13 +13,13 @@ public sealed class DeleteCampaignCommandValidator : AbstractValidator<DeleteCam
 }
 
 internal sealed class DeleteCampaignCommandHandler(
-    ICampaignRepository campaigns, IUnitOfWork uow, TimeProvider clock)
+    ICampaignRepository campaigns, ICampaignAuthorizer authorizer, IUnitOfWork uow, TimeProvider clock)
     : IRequestHandler<DeleteCampaignCommand, Result>
 {
     public async Task<Result> Handle(DeleteCampaignCommand cmd, CancellationToken ct)
     {
         var campaign = await campaigns.GetByIdAsync(cmd.Id, ct);
-        if (campaign is null) return CampaignErrors.NotFound();
+        if (campaign is null || !await authorizer.CanManageAsync(campaign,ct)) return CampaignErrors.NotFound();
 
         campaign.SoftDelete(clock.GetUtcNow().UtcDateTime);
         await uow.SaveChangesAsync(ct);

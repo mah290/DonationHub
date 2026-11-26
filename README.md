@@ -288,3 +288,13 @@ getters and EF Core itself are not tested. Run with `dotnet test`.
   expression trees, so EF still translates them to SQL.
 - **Domain events:** entities raise events (`CampaignCompletedEvent`, `CampaignCancelledEvent`); `UnitOfWork` publishes them
   through MediatR notifications only after the save succeeds. The domain stays free of MediatR.
+
+### Ownership and resource-based authorization
+
+Roles gate the endpoints (`[Authorize(Roles)]`), and ownership is checked again inside the
+handler (defense in depth, SRS §6.3) through `ICampaignAuthorizer`, which asks ASP.NET Core's
+`IAuthorizationService` to evaluate `CampaignOwnershipRequirement` against the loaded
+campaign: Admin may manage any campaign, a CampaignManager only their own. When the caller
+does not own the resource the API answers `404 Campaign.NotFound`, identical to a missing id,
+so resource ids cannot be probed. `GET /campaigns/mine` returns the caller's campaigns in
+all statuses, paged, with both languages.

@@ -13,13 +13,13 @@ public sealed class CancelCampaignCommandValidator : AbstractValidator<CancelCam
 }
 
 internal sealed class CancelCampaignCommandHandler(
-    ICampaignRepository campaigns, IUnitOfWork uow, TimeProvider clock)
+    ICampaignRepository campaigns,ICampaignAuthorizer authorizer, IUnitOfWork uow, TimeProvider clock)
     : IRequestHandler<CancelCampaignCommand, Result<CampaignAdminDto>>
 {
     public async Task<Result<CampaignAdminDto>> Handle(CancelCampaignCommand cmd, CancellationToken ct)
     {
         var campaign = await campaigns.GetByIdAsync(cmd.Id, ct);
-        if (campaign is null) return CampaignErrors.NotFound();
+        if (campaign is null || !await authorizer.CanManageAsync(campaign,ct)) return CampaignErrors.NotFound();
 
         campaign.Cancel(clock.GetUtcNow().UtcDateTime);   
         await uow.SaveChangesAsync(ct);

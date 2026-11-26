@@ -8,6 +8,12 @@ namespace DonationHub.Infrastructure.Persistence
 {
     internal sealed class AsyncQueryExecutor : IAsyncQueryExecutor
     {
+        public Task<int> CountAsync<T>(IQueryable<T> query, CancellationToken ct = default)
+        {
+            return query.CountAsync(ct);
+        }
+
+
         public Task<T?> FirstOrDefaultAsync<T>(IQueryable<T> query, CancellationToken ct = default)
         {
             return query.FirstOrDefaultAsync(ct);
